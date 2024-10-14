@@ -10,7 +10,7 @@ COMMIT := $(shell git rev-parse HEAD)
 PKG_LIST := $(shell go list ${PKG}/... | grep -v /vendor/)
 GO_FILES := $(shell find . -name '*.go' | grep -v /vendor/)
 CDIR = $(shell pwd)
-EXECUTABLES := prog1 prog2
+EXECUTABLES := zoochecker
 GOOS := linux darwin
 GOARCH := amd64
 
@@ -46,7 +46,7 @@ release: git-status build
     done ; \
 
 
-test:
+test: compose-up ## run tests
 	@go test -v ${PKG_LIST}
 #	@go test -short ${PKG_LIST}
 
@@ -117,6 +117,16 @@ docker-run: ## run docker image
 	   docker run -it --rm \
 	   	-e INTERVAL='6' \
 	   	zoochecker \
+	)
+
+compose-up: ## run docker-compose
+	( \
+	   docker-compose up -d; \
+	)
+
+compose-down: ## run docker-compose
+	( \
+	   docker-compose down; \
 	)
 
 .PHONY: build release static upload vet lint fmt gocyclo goimports test

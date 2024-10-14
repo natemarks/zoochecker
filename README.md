@@ -1,73 +1,28 @@
 # zoochecker
-The golang project template builds in some automation to get off the ground quickly. Here's how to get started.
+zoochecker uses zookeeper 4lw commands to monitor the health of a zookeeper ensemble.  it uses 'ruok' to check each node in the ensemble.  it will return the status of each node. It uses 'mntr' to check the numbers of leaders, followers and synced followers.
 
 
-Let's get the tests running right away. 'make static' will run all of the local checks
-```shell
-cd zoochecker
-git init .
-git add -A
-git commit -am 'initial'
-go mod init
-go mod tidy
-make statc
+```bash
+zoochecker localhost:21811 localhost:21812 localhost:21813
+zoochecker version:  e35ffa96c0bbd6649dea6ff60aecefeacd1d8030
+{"level":"info","version":"e35ffa96c0bbd6649dea6ff60aecefeacd1d8030","time":"2024-10-18T11:06:26-04:00","message":"Cluster: {Nodes:[{Host:localhost Port:21811 Timeout:5} {Host:localhost Port:21812 Timeout:5} {Host:localhost Port:21813 Timeout:5}]}"}
+{"level":"info","version":"e35ffa96c0bbd6649dea6ff60aecefeacd1d8030","time":"2024-10-18T11:06:26-04:00","message":"Node localhost:21811 is OK"}
+{"level":"info","version":"e35ffa96c0bbd6649dea6ff60aecefeacd1d8030","time":"2024-10-18T11:06:26-04:00","message":"Node localhost:21812 is OK"}
+{"level":"info","version":"e35ffa96c0bbd6649dea6ff60aecefeacd1d8030","time":"2024-10-18T11:06:26-04:00","message":"Node localhost:21813 is OK"}
+{"level":"info","version":"e35ffa96c0bbd6649dea6ff60aecefeacd1d8030","time":"2024-10-18T11:06:26-04:00","message":"Cluster is OK"}
 ```
 
-Now let's build the exampls executables
-```shell
-make build
-tree build
-build
-├── 72ff9f1cf1d5c56a9c9261774bd906efce6245c4
-│   ├── darwin
-│   │   └── amd64
-│   │       ├── prog1
-│   │       ├── prog2
-│   │       └── version.txt
-│   └── linux
-│       └── amd64
-│           ├── prog1
-│           ├── prog2
-│           └── version.txt
-└── current -> /Users/nmarks/go/src/github.com/natemarks/stayback/build/72ff9f1cf1d5c56a9c9261774bd906efce6245c4
+## contributing
 
-6 directories, 6 files
+have docker and docker-compose installed in order to run a local zookeeper ensemble.  start the ensemble with `make compose-up` and stop it with `make compose-down`.  check the status of the ensemble with `echo ruok | nc localhost 21811` or `echo ruok | nc localhost 21812` or `echo ruok | nc localhost 21813`.
+
+```bash
+make compose-up
+echo ruok | nc  localhost 21811
+echo ruok | nc  localhost 21812
+echo ruok | nc  localhost 21813
+make compose-down
 ```
 
 
-Let's say you were happy with the project and you wanted to release it, you'd bump the version. 
-```shell
-# clean-venv creates a python virtual environment jsut to use the bump2version python package
-make clean-venv
-# this does a patch level semver bump
-make part=patch bump
-```
-
-Now create the release contents with naming that's ok for github releases:
-```shell
-make release
-warning: ignoring symlink /Users/nmarks/go/src/github.com/natemarks/stayback/build/current
-warning: ignoring symlink /Users/nmarks/go/src/github.com/natemarks/stayback/build/current
-f1de3a5aaa990726bec76b23f0368b5d90d5fa86/linux/amd64
-f1de3a5aaa990726bec76b23f0368b5d90d5fa86/darwin/amd64
-f1de3a5aaa990726bec76b23f0368b5d90d5fa86/linux/amd64
-f1de3a5aaa990726bec76b23f0368b5d90d5fa86/darwin/amd64
-rm -f build/current
-ln -s /Users/nmarks/go/src/github.com/natemarks/stayback/build/f1de3a5aaa990726bec76b23f0368b5d90d5fa86 /Users/nmarks/go/src/github.com/natemarks/stayback/build/current
-mkdir -p release/0.0.1
-a .
-a ./prog2
-a ./version.txt
-a ./prog1
-a .
-a ./prog2
-a ./version.txt
-a ./prog1
-❯ tree release
-release
-└── 0.0.1
-    ├── stayback_0.0.1_darwin_amd64.tar.gz
-    └── stayback_0.0.1_linux_amd64.tar.gz
-
-1 directory, 2 files
-```
+'make static' will run static checkers and unit tests.
